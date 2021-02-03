@@ -1,0 +1,97 @@
+h1 {
+    color: rgba(83, 68, 27, 0.7);
+    font-size: 5rem;
+    margin: 45px 0 0 0;
+}
+
+form {
+    text-align: center;
+    margin: 10px auto;
+    padding: 10px 30px;
+    font-size: 1.5rem;
+    width: 60%;
+}
+
+input {
+    display: block;
+    min-height: 30px;
+    min-width: 80%;
+    margin: 0 auto;
+}
+
+li {
+    font-size: 1.5rem;
+    padding: 10px;
+    max-width: 70%;
+    overflow-wrap: break-word;
+}
+
+ul {
+    padding: 0;
+    max-width: 70%;
+    list-style: disc;
+    list-style-position: inside;
+}
+
+form legend {
+    text-align: center;
+    padding: 20px;
+    font-size: 2rem;
+    color: white;
+    font-weight: bold;
+}
+
+form fieldset {
+    border-color: black;
+    border-radius: 15px;
+    padding-bottom: 20px;
+}
+
+ul>div {
+    display: flex;
+    width: 100%;
+    background-color: rgba(194, 186, 78, 0.3);
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 5px;
+    justify-content: space-between;
+}
+
+
+div>button {
+    font-size: 0.75rem;
+    margin: 5px;
+}
+
+ul div+div {
+    margin-top: 5px;
+}
+
+.list-holder {
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+    min-height: 50vh;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+    width: 50%;
+    margin: 0 auto;
+    border-radius: 15px;
+}
+
+.buttons {
+    display: flex;
+    justify-items: center;
+    align-items: center;
+}
+
+
+#hidden {
+    display: none;
+}

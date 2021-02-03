@@ -1,0 +1,34 @@
+<div class="list-holder">
+    <div class="list">
+        <h1>To Do List</h1>
+
+        <!-- <div class="form-holder"> -->
+            <form id="createForm" [formGroup]="createForm" (ngSubmit)="createNewList()">
+                <fieldset>
+                    <legend>Create Task</legend>
+                    <input type="text" formControlName="taskContent" placeholder="List your task">
+                    <button type="submit">Submit</button>
+                </fieldset>
+            </form>
+    
+            <form id="editForm" [formGroup]="editForm" (ngSubmit)="changeTask()" hidden>
+                <fieldset>
+                    <legend>Edit Task</legend>
+                    <input type="text" formControlName="newContent">
+                    <input type="text" id="hidden" formControlName="id" hidden>
+                    <button type="submit">Change Task</button>
+                </fieldset>
+            </form>
+        <!-- </div> -->
+
+        <ul>
+            <div *ngFor="let task of taskList, let i = index">
+                <li>{{task.content}} </li>
+                <div class="buttons">
+                    <button (click)="deleteTask(i)">Delete</button>
+                    <button (click)="editTask(i)">Edit</button>
+                </div>
+            </div>
+        </ul>
+    </div>
+</div>
