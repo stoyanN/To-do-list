@@ -9,3 +9,5 @@ The app use localStorage to save the information.
 1. Run `npm install` to download all the dependencies.
 1. Finally run `ng s` to start the application via Angular in `http://localhost:4200/`.
 
+### Unit tests
+Run `ng t` in order to check the Unit tests about Components and Services.
