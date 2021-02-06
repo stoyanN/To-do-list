@@ -17,11 +17,6 @@ const enum Events {
   reload = 'reload'
 }
 
-const enum ErrMessages {
-  emptyField = 'No empty fileds are allowed',
-  notEnoughContent = 'Each field must be at least 3 characters long'
-}
-
 const enum ElementView {
   block = 'block',
   none = 'none'
@@ -42,12 +37,9 @@ export class ListComponent implements OnInit, OnDestroy {
   editFormElementDescription: string;
   editFormElementId: number;
 
-  isErrorMessage: boolean = true;
-
   constructor(private service: OperationsService) { }
 
   ngOnInit(): void {
-    this.isErrorMessage = false;
     this.isLocalStorage = this.service.checkLocalStorage();
 
     if (this.isLocalStorage) {
@@ -71,23 +63,6 @@ export class ListComponent implements OnInit, OnDestroy {
     document.getElementById(elementId).style.display = displayState;
   }
 
-  private errorMsgText(elemId: string, message: string): void {
-    document.getElementById(elemId).textContent = message;
-
-  }
-
-  private formValidationHandler(formValue: object): void {
-    for (let rec in formValue) {
-      if (formValue[rec] === '') {
-        this.errorMsgText(elementsId.errorMessage, ErrMessages.emptyField);
-        return;
-      } else if (formValue[rec].length < 3) {
-        this.errorMsgText(elementsId.errorMessage, ErrMessages.notEnoughContent);
-        return;
-      }
-    }
-  }
-
   deleteTask(elementIndex: number): void {
     this.service.deleteSingleTask(elementIndex);
     this.trigger.emit(Events.reload);
@@ -105,11 +80,6 @@ export class ListComponent implements OnInit, OnDestroy {
   }
 
   changeTask(form: HTMLFormElement): void {
-    if (form.invalid) {
-      this.changeElementView(elementsId.errorMessage, ElementView.block);
-      return;
-    }
-
     let { id, newTitle, newDescription } = form.value;
 
 
@@ -118,21 +88,13 @@ export class ListComponent implements OnInit, OnDestroy {
 
     this.changeElementView(elementsId.editForm, ElementView.none);
     this.changeElementView(elementsId.createForm, ElementView.block);
-    this.changeElementView(elementsId.errorMessage, ElementView.none);
   }
 
 
   createNewTask(form: HTMLFormElement): void {
-    if (form.invalid) {
-      this.formValidationHandler(form.value);
-      this.changeElementView(elementsId.errorMessage, ElementView.block);
-      return;
-    }
-
     let { taskTitle, taskDescription } = form.value;
 
     this.service.createNewTask(taskTitle, taskDescription);
-    this.changeElementView(elementsId.errorMessage, ElementView.none);
 
     this.trigger.emit(Events.reload);
 

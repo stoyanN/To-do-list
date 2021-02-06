@@ -6,19 +6,16 @@ import { AppComponent } from './app.component';
 import { ListComponent } from './list/list.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OperationsService } from './services/operations.service';
-import { ErrorMessageDirective } from './error-message.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ListComponent,
-    ErrorMessageDirective
+    ListComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule,
-    ReactiveFormsModule
+    FormsModule
   ],
   providers: [
     OperationsService

@@ -2,28 +2,71 @@
     <div class="list">
         <h1>To Do List</h1>
 
-        <form id="createForm" #createForm="ngForm" (ngSubmit)="createNewTask(createForm.form)">
+        <form id="createForm" #createForm="ngForm" (ngSubmit)="createNewTask(createForm)">
             <fieldset>
                 <legend>Create Task</legend>
-                <input ngModel required minlength="3" type="text" name="taskTitle" placeholder="Task Title">
-                <textarea ngModel required minlength="3" name="taskDescription" placeholder="Task description" cols="30"
-                    rows="10"></textarea>
-                <button type="submit">Create</button>
+                <input ngModel required minlength="3" type="text" #taskTitle="ngModel" name="taskTitle"
+                    placeholder="Task Title">
+                <textarea ngModel required minlength="5" #taskDescription="ngModel" name="taskDescription"
+                    placeholder="Task description" cols="30" rows="10"></textarea>
+                <button type="submit" [disabled]="createForm.invalid">Create</button>
+                <div *ngIf="(taskTitle.invalid) && (taskTitle.dirty || taskTitle.touched)" class="error-msg">
+
+                    <div *ngIf="taskTitle.errors.required">
+                        Task title is required.
+                    </div>
+                    <div *ngIf="taskTitle.errors.minlength">
+                        Title must be at least {{taskTitle.errors.minlength.requiredLength}} characters long.
+                    </div>
+
+                </div>
+                <div *ngIf="(taskDescription.invalid) && (taskDescription.dirty || taskDescription.touched)"
+                    class="error-msg">
+
+                    <div *ngIf="taskDescription.errors.required">
+                        Description field is required.
+                    </div>
+                    <div *ngIf="taskDescription.errors.minlength">
+                        Description must be at least {{taskDescription.errors.minlength.requiredLength}} characters
+                        long.
+                    </div>
+
+                </div>
             </fieldset>
         </form>
 
-        <form id="editForm" class="hidden" #editForm="ngForm" (ngSubmit)="changeTask(editForm.form)">
+        <form id="editForm" class="hidden" #editForm="ngForm" (ngSubmit)="changeTask(editForm)">
             <fieldset>
                 <legend>Edit Task</legend>
-                <input [(ngModel)]="editFormElementTitle" required minlength="3" type="text" name="newTitle">
-                <textarea [(ngModel)]="editFormElementDescription" required minlength="3" name="newDescription"
+                <input [(ngModel)]="editFormElementTitle" required minlength="3" type="text" #newTitle="ngModel" name="newTitle">
+                <textarea [(ngModel)]="editFormElementDescription" required minlength="5" #newDescription="ngModel" name="newDescription"
                     cols="30" rows="10"></textarea>
                 <input [(ngModel)]="editFormElementId" type="text" class="hidden" name="id">
-                <button type="submit">Change Task</button>
+                <button type="submit" [disabled]="editForm.invalid">Change Task</button>
+                <div *ngIf="(newTitle.invalid) && (newTitle.dirty || newTitle.touched)" class="error-msg">
+
+                    <div *ngIf="newTitle.errors.required">
+                        Task title is required.
+                    </div>
+                    <div *ngIf="newTitle.errors.minlength">
+                        Title must be at least {{newTitle.errors.minlength.requiredLength}} characters long.
+                    </div>
+
+                </div>
+                <div *ngIf="(newDescription.invalid) && (newDescription.dirty || newDescription.touched)"
+                    class="error-msg">
+
+                    <div *ngIf="newDescription.errors.required">
+                        Description field is required.
+                    </div>
+                    <div *ngIf="newDescription.errors.minlength">
+                        Description must be at least {{newDescription.errors.minlength.requiredLength}} characters
+                        long.
+                    </div>
+
+                </div>
             </fieldset>
         </form>
-
-        <div class="error-msg" id="error-msg" hidden>The task must be at least 3 characters long</div>
 
         <div class="task-holder">
             <div *ngFor="let task of taskList, let i = index">

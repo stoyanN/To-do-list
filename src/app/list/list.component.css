@@ -95,10 +95,9 @@ div>button {
 .error-msg {
     width: 60%;
     background-color: red;
-    font-size: 1.75rem;
-    padding: 15px;
+    padding: 5px;
     text-align: center;
-    margin: 15px auto;
+    margin: 5px auto;
     border: 1px solid black;
     border-radius: 10px;
     background-color: rgba(240, 45, 45, 0.75);
