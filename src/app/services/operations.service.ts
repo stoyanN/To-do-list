@@ -4,15 +4,16 @@ import { singleTask } from '../single-task-model';
 @Injectable({
   providedIn: 'root'
 })
+
 export class OperationsService {
-  collection: string = 'taskList';
+  localStorageProperty: string = 'taskList';
   constructor() { }
 
   private getListOfTasks(): singleTask[] {
-    return JSON.parse(localStorage.getItem(this.collection));
+    return JSON.parse(localStorage.getItem(this.localStorageProperty));
   }
 
-  checkLocalStorage() {
+  checkLocalStorage(): boolean {
     try {
       localStorage.setItem('testProp', 'testValue');
       localStorage.removeItem('testProp');
@@ -22,29 +23,31 @@ export class OperationsService {
     }
   }
 
-  deleteSingleTask(taskIndex: number) {
+  deleteSingleTask(taskIndex: number): void {
     let tasksList = this.getListOfTasks();
 
     tasksList.splice(taskIndex, 1);
-    localStorage.setItem('taskList', JSON.stringify(tasksList));
+    localStorage.setItem(this.localStorageProperty, JSON.stringify(tasksList));
   }
 
-  getTaskCurrentValue(taskIndex: number): string {
+  getTaskCurrentValues(taskIndex: number): singleTask {
     let tasksList = this.getListOfTasks();
-    let { content } = tasksList[taskIndex];
 
-    return content;
+    return tasksList[taskIndex];
   }
 
-  changeTaskValue(taskIndex: number, taskContent: string) {
+  changeTaskValue(taskIndex: number, taskTitle: string, taskContent: string): void {
     let tasksList = this.getListOfTasks();
-    tasksList[taskIndex] = { content: taskContent };
-    localStorage.setItem('taskList', JSON.stringify(tasksList));
+    
+    tasksList[taskIndex] = { title: taskTitle, description: taskContent };
+    localStorage.setItem(this.localStorageProperty, JSON.stringify(tasksList));
   }
 
-  createNewTask(taskContent: string) {
+  createNewTask(taskTitle: string, taskContent: string): void {
     let tasksList = this.getListOfTasks();
-    tasksList.push({ content: taskContent });
-    localStorage.setItem('taskList', JSON.stringify(tasksList));
+
+    tasksList.push({ title: taskTitle, description: taskContent });
+    localStorage.setItem(this.localStorageProperty, JSON.stringify(tasksList));
   }
+  
 }

@@ -4,6 +4,12 @@ import { OperationsService } from './operations.service';
 
 describe('OperationsService', () => {
   let service: OperationsService;
+  const enum Test {
+    title = 'testTitle',
+    value = 'testValue',
+    localStorageProperty = 'taskList'
+  }
+
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
@@ -44,41 +50,41 @@ describe('OperationsService', () => {
   });
 
   it('should add new task when createNewTask method is invoked', () => {
-    localStorage.setItem('taskList', JSON.stringify([]));
+    localStorage.setItem(Test.localStorageProperty, JSON.stringify([]));
 
-    service.createNewTask('testValue');
+    service.createNewTask(Test.title, Test.value);
 
-    let result = JSON.parse(localStorage.getItem('taskList'));
+    let result = JSON.parse(localStorage.getItem(Test.localStorageProperty));
 
     expect(result.length).toBe(1);
   });
 
   it('should change task value when changeTaskValue method is invoked', () => {
-    localStorage.setItem('taskList', JSON.stringify([]));
-    service.createNewTask('testValue');
-    service.changeTaskValue(0, 'changedTestValue');
+    localStorage.setItem(Test.localStorageProperty, JSON.stringify([]));
+    service.createNewTask(Test.title, Test.value);
+    service.changeTaskValue(0, Test.title, 'changedTestValue');
 
-    let result = JSON.parse(localStorage.getItem('taskList'));
+    let result = JSON.parse(localStorage.getItem(Test.localStorageProperty));
 
-    expect(result[0].content).toBe('changedTestValue');
+    expect(result[0].description).toBe('changedTestValue');
   });
 
   it('should return the current task content when getTaskCurrentValue method is invoked', () => {
-    localStorage.setItem('taskList', JSON.stringify([]));
-    service.createNewTask('testValue');
+    localStorage.setItem(Test.localStorageProperty, JSON.stringify([]));
+    service.createNewTask(Test.title, Test.value);
 
-    let result = service.getTaskCurrentValue(0);
+    let result = service.getTaskCurrentValues(0);
 
-    expect(result).toBe('testValue');
+    expect(result).toEqual({ title: Test.title, description: Test.value });
   });
 
   it('should delete a task with a given index when deleteSingleTask method is invoked', () => {
-    localStorage.setItem('taskList', JSON.stringify([]));
-    service.createNewTask('testValue');
-    
+    localStorage.setItem(Test.localStorageProperty, JSON.stringify([]));
+    service.createNewTask(Test.title, Test.value);
+
     service.deleteSingleTask(0);
 
-    let result = JSON.parse(localStorage.getItem('taskList'));
+    let result = JSON.parse(localStorage.getItem(Test.localStorageProperty));
 
     expect(result.length).toBe(0);
   })

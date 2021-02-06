@@ -1,3 +1,4 @@
 export interface singleTask {
-    content: string
+    title: string,
+    description: string
 }

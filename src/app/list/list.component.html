@@ -2,33 +2,40 @@
     <div class="list">
         <h1>To Do List</h1>
 
-        <!-- <div class="form-holder"> -->
-            <form id="createForm" [formGroup]="createForm" (ngSubmit)="createNewList()">
-                <fieldset>
-                    <legend>Create Task</legend>
-                    <input type="text" formControlName="taskContent" placeholder="List your task">
-                    <button type="submit">Submit</button>
-                </fieldset>
-            </form>
-    
-            <form id="editForm" [formGroup]="editForm" (ngSubmit)="changeTask()" hidden>
-                <fieldset>
-                    <legend>Edit Task</legend>
-                    <input type="text" formControlName="newContent">
-                    <input type="text" id="hidden" formControlName="id" hidden>
-                    <button type="submit">Change Task</button>
-                </fieldset>
-            </form>
-        <!-- </div> -->
+        <form id="createForm" #createForm="ngForm" (ngSubmit)="createNewTask(createForm.form)">
+            <fieldset>
+                <legend>Create Task</legend>
+                <input ngModel required minlength="3" type="text" name="taskTitle" placeholder="Task Title">
+                <textarea ngModel required minlength="3" name="taskDescription" placeholder="Task description" cols="30"
+                    rows="10"></textarea>
+                <button type="submit">Create</button>
+            </fieldset>
+        </form>
 
-        <ul>
+        <form id="editForm" class="hidden" #editForm="ngForm" (ngSubmit)="changeTask(editForm.form)">
+            <fieldset>
+                <legend>Edit Task</legend>
+                <input [(ngModel)]="editFormElementTitle" required minlength="3" type="text" name="newTitle">
+                <textarea [(ngModel)]="editFormElementDescription" required minlength="3" name="newDescription"
+                    cols="30" rows="10"></textarea>
+                <input [(ngModel)]="editFormElementId" type="text" class="hidden" name="id">
+                <button type="submit">Change Task</button>
+            </fieldset>
+        </form>
+
+        <div class="error-msg" id="error-msg" hidden>The task must be at least 3 characters long</div>
+
+        <div class="task-holder">
             <div *ngFor="let task of taskList, let i = index">
-                <li>{{task.content}} </li>
-                <div class="buttons">
+                <div class="task-content">
+                    <h2>{{task.title}}</h2>
+                    <p>{{task.description}}</p>
+                </div>
+                <div class="btn-holder">
                     <button (click)="deleteTask(i)">Delete</button>
-                    <button (click)="editTask(i)">Edit</button>
+                    <button (click)="editTask(i, editForm)">Edit</button>
                 </div>
             </div>
-        </ul>
+        </div>
     </div>
 </div>

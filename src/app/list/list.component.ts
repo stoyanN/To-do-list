@@ -1,9 +1,31 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as EventEmitter from 'events';
 import { OperationsService } from '../services/operations.service';
 import { singleTask } from '../single-task-model';
 
+const enum elementsId {
+  editForm = 'editForm',
+  createForm = 'createForm',
+  errorMessage = 'error-msg'
+}
+
+const enum localStorageProperties {
+  taskList = 'taskList'
+}
+
+const enum Events {
+  reload = 'reload'
+}
+
+const enum ErrMessages {
+  emptyField = 'No empty fileds are allowed',
+  notEnoughContent = 'Each field must be at least 3 characters long'
+}
+
+const enum ElementView {
+  block = 'block',
+  none = 'none'
+}
 
 @Component({
   selector: 'app-list',
@@ -11,71 +33,109 @@ import { singleTask } from '../single-task-model';
   styleUrls: ['./list.component.css']
 })
 
-export class ListComponent implements OnInit {
+export class ListComponent implements OnInit, OnDestroy {
   taskList: singleTask[] = [];
-  createForm: FormGroup = new FormGroup({
-    taskContent: new FormControl('', [Validators.required, Validators.minLength(3)])
-  });
-  editForm: FormGroup = new FormGroup({
-    newContent: new FormControl('', [Validators.required, Validators.minLength(3)]),
-    id: new FormControl()
-  });
   isLocalStorage: Boolean;
   trigger: EventEmitter = new EventEmitter();
+
+  editFormElementTitle: string;
+  editFormElementDescription: string;
+  editFormElementId: number;
+
+  isErrorMessage: boolean = true;
 
   constructor(private service: OperationsService) { }
 
   ngOnInit(): void {
+    this.isErrorMessage = false;
     this.isLocalStorage = this.service.checkLocalStorage();
+
     if (this.isLocalStorage) {
-      let isTasksAvailable = !!localStorage.getItem('taskList');
+      let isTasksAvailable = !!localStorage.getItem(localStorageProperties.taskList);
+
       if (isTasksAvailable) {
-        this.taskList = JSON.parse(localStorage.getItem('taskList'));
+        this.taskList = JSON.parse(localStorage.getItem(localStorageProperties.taskList));
       } else {
-        localStorage.setItem('taskList', JSON.stringify([]));
+        localStorage.setItem(localStorageProperties.taskList, JSON.stringify([]));
       }
 
-      this.trigger.addListener('reload', () => this.taskList = JSON.parse(localStorage.getItem('taskList')));
+      this.trigger.addListener(Events.reload, () => this.taskList = JSON.parse(localStorage.getItem(localStorageProperties.taskList)));
     }
   }
 
-  deleteTask(elementIndex: number) {
+  ngOnDestroy(): void {
+    this.trigger.removeAllListeners;
+  }
+
+  private changeElementView(elementId: string, displayState: string): void {
+    document.getElementById(elementId).style.display = displayState;
+  }
+
+  private errorMsgText(elemId: string, message: string): void {
+    document.getElementById(elemId).textContent = message;
+
+  }
+
+  private formValidationHandler(formValue: object): void {
+    for (let rec in formValue) {
+      if (formValue[rec] === '') {
+        this.errorMsgText(elementsId.errorMessage, ErrMessages.emptyField);
+        return;
+      } else if (formValue[rec].length < 3) {
+        this.errorMsgText(elementsId.errorMessage, ErrMessages.notEnoughContent);
+        return;
+      }
+    }
+  }
+
+  deleteTask(elementIndex: number): void {
     this.service.deleteSingleTask(elementIndex);
-    this.trigger.emit('reload');
+    this.trigger.emit(Events.reload);
   }
 
-  editTask(elementIndex: number) {
-    let content = this.service.getTaskCurrentValue(elementIndex);
+  editTask(elementIndex: number): void {
+    let { title, description } = this.service.getTaskCurrentValues(elementIndex);
 
-    this.editForm.setValue({ newContent: content, id: elementIndex });
-    document.getElementById('editForm').style.display = "block";
-    document.getElementById('createForm').style.display = "none";
+    this.editFormElementTitle = title;
+    this.editFormElementDescription = description;
+    this.editFormElementId = elementIndex;
+
+    this.changeElementView(elementsId.editForm, ElementView.block);
+    this.changeElementView(elementsId.createForm, ElementView.none);
   }
 
-  changeTask() {
-    if (this.editForm.valid) {
-      let { id, newContent } = this.editForm.value;
-
-      this.service.changeTaskValue(id, newContent);
-      this.trigger.emit('reload');
-
-      document.getElementById('editForm').style.display = "none";
-      document.getElementById('createForm').style.display = "block";
-    } else {
-      alert('The task must be at least 3 characters long');
-    }
-  }
-
-  createNewList() {
-    if (this.createForm.valid) {
-      let { taskContent } = this.createForm.value;
-
-      this.service.createNewTask(taskContent);
-      this.trigger.emit('reload');
-    } else {
-      alert('The task must be at least 3 characters long');
+  changeTask(form: HTMLFormElement): void {
+    if (form.invalid) {
+      this.changeElementView(elementsId.errorMessage, ElementView.block);
+      return;
     }
 
-    this.createForm.reset();
+    let { id, newTitle, newDescription } = form.value;
+
+
+    this.service.changeTaskValue(id, newTitle, newDescription);
+    this.trigger.emit(Events.reload);
+
+    this.changeElementView(elementsId.editForm, ElementView.none);
+    this.changeElementView(elementsId.createForm, ElementView.block);
+    this.changeElementView(elementsId.errorMessage, ElementView.none);
+  }
+
+
+  createNewTask(form: HTMLFormElement): void {
+    if (form.invalid) {
+      this.formValidationHandler(form.value);
+      this.changeElementView(elementsId.errorMessage, ElementView.block);
+      return;
+    }
+
+    let { taskTitle, taskDescription } = form.value;
+
+    this.service.createNewTask(taskTitle, taskDescription);
+    this.changeElementView(elementsId.errorMessage, ElementView.none);
+
+    this.trigger.emit(Events.reload);
+
+    form.reset();
   }
 }
